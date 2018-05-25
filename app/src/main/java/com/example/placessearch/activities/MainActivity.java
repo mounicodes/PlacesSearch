@@ -1,21 +1,22 @@
-package com.example.placessearch;
+package com.example.placessearch.activities;
 
 import android.Manifest;
 import android.Manifest.permission;
 import android.content.pm.PackageManager;
-import android.support.annotation. NonNull;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
 import android.widget.Toast;
-
-import com.example.placessearch.PlacesFetcher.onResultObtainedListener;
+import com.example.placessearch.adapter.PlacesAdapter;
+import com.example.placessearch.network.PlacesFetcher.onResultObtainedListener;
+import com.example.placessearch.R;
+import com.example.placessearch.network.VolleyPlacesFetcher;
+import com.example.placessearch.objects.Place;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +29,6 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    initialize();
-  }
-
-  private void initialize() {
-
     mPlaces = new ArrayList<>();
 
     // Initialize recycler view and set data adapter
@@ -46,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     RecyclerView recyclerView = findViewById(R.id.recycler_view);
-    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    recyclerView
+        .setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     mPlaceArrayAdapter = new PlacesAdapter(this, mPlaces);
     recyclerView.setAdapter(mPlaceArrayAdapter);
   }
@@ -66,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     final VolleyPlacesFetcher placesFetcher = new VolleyPlacesFetcher(this);
     String uri = placesFetcher
         .buildPlacesUri(this, this, getResources().getString(R.string.apiKey), "50000");
-    PlacesFetcher.onResultObtainedListener listener = new onResultObtainedListener() {
+    onResultObtainedListener listener = new onResultObtainedListener() {
       @Override
       public void onResultObtained(JSONObject jsonObject) {
         mPlaces.addAll(placesFetcher.parseJson(jsonObject));

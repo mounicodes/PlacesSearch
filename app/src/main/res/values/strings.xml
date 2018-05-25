@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PlacesSearch</string>
+    <string name="app_name">Cafe Near you</string>
     <string name="place">Place</string>
     <string name="apiKey">AIzaSyBBuiXIK0tDJgMUqHOqEyZugoN53_Bc_BY</string>
 </resources>
