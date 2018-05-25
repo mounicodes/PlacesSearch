@@ -1,4 +1,4 @@
-package com.example.placessearch;
+package com.example.placessearch.network;
 
 import android.Manifest.permission;
 import android.app.Activity;
@@ -13,6 +13,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
+import com.example.placessearch.objects.OpeningHours;
+import com.example.placessearch.objects.Place;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
@@ -36,12 +38,14 @@ public abstract class PlacesFetcher {
       String radius) {
 
     mLocation = getCurrentLocation(context, activity);
+    mLocation.setLatitude(37.7832560082016); //TODO remove just for test
+    mLocation.setLongitude(-122.41898059594968);
     return Uri.parse(NEARBY_SEARCH_URL)
         .buildUpon()
         .appendQueryParameter("location",
             mLocation.getLatitude() + "," + mLocation.getLongitude())
-        .appendQueryParameter("radius", radius)
-        .appendQueryParameter("type", "coffee")
+        .appendQueryParameter("rankby", "distance")
+        .appendQueryParameter("type", "cafe|bakery")
         .appendQueryParameter("key", apiKey)
         .build()
         .toString();
@@ -114,7 +118,8 @@ public abstract class PlacesFetcher {
       for (int counter = 0; counter < results.length(); counter++) {
         JSONObject jsonObj = results.getJSONObject(counter);
         String uri = null;
-        if (!jsonObj.isNull("photos")) {
+        if (!jsonObj.isNull("photos") && !jsonObj.isNull("name")
+            && (!jsonObj.isNull("rating")) && (!jsonObj.isNull("opening_hours"))) {
           photos = jsonObj.getJSONArray("photos");
           photoReference = ((JSONObject) photos.get(0)).getString
               ("photo_reference");
@@ -124,13 +129,16 @@ public abstract class PlacesFetcher {
               .appendQueryParameter("photoreference", photoReference)
               .appendQueryParameter("key", "AIzaSyBBuiXIK0tDJgMUqHOqEyZugoN53_Bc_BY")
               .toString();
+
+          Place place = new Place();
+          place.setName(jsonObj.getString("name"));
+          place.setRating(jsonObj.optInt("rating"));
+          place.setUri(uri);
+          OpeningHours hrs = new OpeningHours();
+          hrs.setOpenNow(jsonObj.optJSONObject("opening_hours").optBoolean("open_now"));
+          place.setOpeningHours(hrs);
+          places.add(place);
         }
-        Place place = new Place(jsonObj.getString("name"),
-            jsonObj.optDouble("rating"),
-            jsonObj.optInt("price_level"),
-            jsonObj.optString("place_id"),
-            uri);
-        places.add(place);
       }
     } catch (JSONException e) {
       Log.e(TAG, e.getMessage(), e);

@@ -1,4 +1,4 @@
-package com.example.placessearch;
+package com.example.placessearch.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import com.example.placessearch.R;
+import com.example.placessearch.objects.Place;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +28,14 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
   public static class ViewHolder extends RecyclerView.ViewHolder {
 
     public TextView mName;
-    public TextView mPriceLevel;
+    public TextView mOpenNow;
     public RatingBar mRating;
     public ImageView mImage;
 
     public ViewHolder(View view) {
       super(view);
       mName = view.findViewById(R.id.place_name);
-      mPriceLevel = view.findViewById(R.id.price_level);
+      mOpenNow = view.findViewById(R.id.open_now);
       mRating = view.findViewById(R.id.rating);
       mImage = view.findViewById(R.id.image);
     }
@@ -47,7 +49,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
   @NonNull
   @Override
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View view = LayoutInflater.from(mContext).inflate(R.layout.viewholder_place, null);
+    View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_place,parent,false);
     return new ViewHolder(view);
   }
 
@@ -55,10 +57,14 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
     Place place = mPlaceList.get(position);
     holder.mName.setText(place.getName());
-    holder.mPriceLevel.setText(String.valueOf(place.getPriceLevel()));
+    if (place.getOpeningHours().isOpenNow()) {
+      holder.mOpenNow.setText("Open Now");
+    } else {
+      holder.mOpenNow.setText("Closed");
+    }
     holder.mRating.setRating((float) place.getRating());
     Glide.with(mContext)
-        .load(place.getPhoto())
+        .load(place.getUri())
         .error(R.drawable.ic_not_found)
         .into(holder.mImage);
   }

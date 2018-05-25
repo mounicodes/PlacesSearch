@@ -1,9 +1,6 @@
-package com.example.placessearch;
+package com.example.placessearch.network;
 
-import android.app.VoiceInteractor;
 import android.content.Context;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.telecom.Call;
 import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -12,7 +9,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonObject;
+import com.example.placessearch.network.PlacesFetcher;
 import org.json.JSONObject;
 
 /**
@@ -31,7 +28,7 @@ public class VolleyPlacesFetcher extends PlacesFetcher {
   }
 
   @Override
-  void fetchData(String uri, final onResultObtainedListener listener) {
+  public void fetchData(String uri, final onResultObtainedListener listener) {
     mRequestQueue = Volley.newRequestQueue(mContext);
     JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
         uri,
