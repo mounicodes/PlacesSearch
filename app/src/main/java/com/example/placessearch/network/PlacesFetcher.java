@@ -38,8 +38,6 @@ public abstract class PlacesFetcher {
       String radius) {
 
     mLocation = getCurrentLocation(context, activity);
-    mLocation.setLatitude(37.7832560082016); //TODO remove just for test
-    mLocation.setLongitude(-122.41898059594968);
     return Uri.parse(NEARBY_SEARCH_URL)
         .buildUpon()
         .appendQueryParameter("location",
